@@ -9,8 +9,6 @@ class GameOverView(arcade.View):
 
     def __init__(self):
         super().__init__()
-        # self.texture = arcade.load_texture(
-        #     "assets/images/background.jpg")
         # arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
     @property
@@ -24,8 +22,6 @@ class GameOverView(arcade.View):
 
     def on_draw(self):
         self.clear()
-        self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-                                SCREEN_WIDTH, SCREEN_HEIGHT)
         self.text.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
