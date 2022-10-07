@@ -9,7 +9,7 @@ from window import Window
 import pyglet.image
 
 if __name__ == "__main__":
-    window = Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    window = Window(SCREEN_WIDTH, SCREEN_HEIGHT)
     # window.set_icon(pyglet.image.load(
     #   'assets'))
     window.views = {"Menu": views.Menu(), "LevelUp": views.LevelUpView(
