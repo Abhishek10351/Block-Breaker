@@ -15,12 +15,12 @@ class Level1(arcade.View):
 
     def setup(self):
         self.physics_engine = physics_engine()
-        self.paddle = arcade.Sprite("assets/Paddles/paddle_05.png", scale=0.20,
+        self.paddle = arcade.Sprite("assets/puzzlepack/paddle.png", scale=0.20,
                                     center_y=20, center_x=SCREEN_WIDTH/2, hit_box_algorithm="Detailed")
         self.player = arcade.Sprite("assets/puzzlepack/ballBlue.png", scale=0.75, center_x=SCREEN_WIDTH/2, center_y=self.paddle.top)
         self.player.boundary_left = 0
         self.tilemap = arcade.TileMap(
-            "assets/untitled.tmj", hit_box_algorithm="Detailed")
+            "assets/map.tmj", hit_box_algorithm="Detailed")
         self.blocks = self.tilemap.sprite_lists["base"]
 
         self.physics_engine.add_sprite_list(
@@ -35,7 +35,8 @@ class Level1(arcade.View):
 
     def on_update(self, delta_time):
         for i in arcade.check_for_collision_with_list(self.player, self.blocks):
-            #self.physics_engine.set_velocity(self.player, (self.player.velocity[0], -self.player.velocity[1]))
+            self.player.velocity = (self.player.velocity[0]*5, self.player.velocity[1]*5)
+            self.physics_engine.set_velocity(self.player, (self.player.velocity[0], self.player.velocity[1]))
             #self.physics_engine.apply_force(self.player, (self.player.velocity[0], -self.player.velocity[1]))
             i.kill()
 
@@ -46,6 +47,8 @@ class Level1(arcade.View):
                 self.physics_engine.set_horizontal_velocity(self.player, 80)
         self.paddle.update()
         self.physics_engine.set_position(self.paddle, self.paddle.position)
+        #self.physics_engine.set_position(self.player, self.player.position)
+        self.player.update()
         self.physics_engine.step()
 
     def on_draw(self):
@@ -56,10 +59,11 @@ class Level1(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.SPACE:
-            if self.launched:
-                self.physics_engine.apply_force(self.player, (0,-50000))
-            else:
-                self.physics_engine.apply_force(self.player, (0,50000))
+            if not self.launched:
+                self.physics_engine.apply_force(self.player, (0, 50000))
+                #self.physics_engine.set_velocity(self.player, (0,500))
+            # else:
+            #     self.physics_engine.apply_force(self.player, (0,50000))
             self.launched=True
         
         if self.launched:
