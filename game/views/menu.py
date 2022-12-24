@@ -28,7 +28,7 @@ class Menu(arcade.View):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
         self.manager.add(
-            arcade.gui.UIAnchorWidget(
+            arcade.gui.UIAnchorLayout(
                 anchor_x="center_x",
                 anchor_y="center_y",
                 child=self.start_screen)
