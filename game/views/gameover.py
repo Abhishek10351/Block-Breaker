@@ -18,7 +18,7 @@ class GameOverView(arcade.View):
     @property
     def text(self):
         return arcade.Text(self.message, 100, 400, bold=True, width=300,
-                           font_name="Kenney Future Narrow", font_size=40, multiline=True)
+                           font_name="Kenney Future", font_size=40, multiline=True)
 
     def on_draw(self):
         self.clear()
