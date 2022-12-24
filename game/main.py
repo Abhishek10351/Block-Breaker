@@ -14,9 +14,10 @@ if __name__ == "__main__":
     #   'assets'))
     window.views = {"Menu": views.Menu(), "LevelUp": views.LevelUpView(
     ), "GameOver": views.GameOverView(), "HowToPlay": views.HowToPlay()}
-    window.show_view(window.views["Menu"])
     window.levels = [getattr(views.levels, i)()
                      for i in dir(views.levels) if i.startswith("Level")]
+    window.levels[0].setup()
+    window.show_view(window.levels[0])
     arcade.set_background_color(arcade.color.SKY_BLUE)
     arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
     arcade.run()
