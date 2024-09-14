@@ -38,7 +38,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"block.tsx"
+         "source":"../tilesets/block.tsx"
         }],
  "tilewidth":32,
  "type":"map",

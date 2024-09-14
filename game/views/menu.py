@@ -9,7 +9,6 @@ class Menu(arcade.View):
     def __init__(self):
         super().__init__()
         self.start_screen = arcade.gui.UIBoxLayout(space_between=20)
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         start_button = arcade.gui.UIFlatButton(
             text="Start Game", width=200, style=styles.dark_button)
         start_button.on_click = self.on_start_button_click

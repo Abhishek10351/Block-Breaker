@@ -7,7 +7,6 @@ import styles
 class LevelSelection(arcade.View):
     def __init__(self):
         super().__init__()
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
         self.buttons = [arcade.gui.UIFlatButton(
             text=i+1, width=60, style=styles.primary_button) for i in range(self.window.total_levels)]
         self.levels = arcade.gui.UIBoxLayout(

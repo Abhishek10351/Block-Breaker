@@ -8,7 +8,6 @@ class HowToPlay(arcade.View):
 
     def __init__(self):
         super().__init__()
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
         self.message ="""
         Hello, Player! Welcome to Block Breaker.
