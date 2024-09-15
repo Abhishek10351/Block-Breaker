@@ -7,3 +7,4 @@ SCREEN_HEIGHT = 600
 
 
 ASSETS_PATH = Path(".").parent / "assets"
+MAP_PATH = ASSETS_PATH / "levels" 

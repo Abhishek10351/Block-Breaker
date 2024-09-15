@@ -3,6 +3,6 @@ from .howtoplay import HowToPlay
 from .levelup import LevelUpView
 from .gameover import GameOverView
 from .settings import SettingsView
-from .levels import *
+from .level import Level
 __all__ = ['Menu', 'HowToPlay',
-           'GameOverView', 'LevelUpView', 'Level1', 'Level1', 'SettingsView']
+           'GameOverView', 'LevelUpView', 'Level', 'SettingsView']
