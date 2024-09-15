@@ -40,7 +40,7 @@ class Menu(arcade.View):
         pass
 
     def on_start_button_click(self, event):
-        self.window.show_view(self.window.views["Level"])
+        self.window.show_view(self.window.views["LevelSelection"])
 
     def on_how_to_play_click(self, event):
         self.window.show_view(self.window.views["HowToPlay"])
