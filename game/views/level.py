@@ -89,7 +89,7 @@ class Level(arcade.View):
             "walls"), body_type=arcade.PymunkPhysicsEngine.STATIC, damping=0.0, mass=10, friction=1.0, elasticity=1.0)
         
         self.physics_engine.add_collision_handler(
-            "ball", "tile", post_handler=self.ball_tile_collision)
+            "ball", "tile", begin_handler=self.ball_tile_collision)
 
         self.physics_engine.set_horizontal_velocity(self.ball_sprite, 100)
 
@@ -122,10 +122,6 @@ class Level(arcade.View):
                     self.ball_sprite, 100)
         brick_hit_list = arcade.check_for_collision_with_list(
             self.ball_sprite, self.scene.get_sprite_list("tiles"))
-        for brick in brick_hit_list:
-            brick.remove_from_sprite_lists()
-            arcade.play_sound(self.brick_hit)
-            self.score += 10
         if self.paddle.left <= 0:
             self.paddle.left = 0
             self.physics_engine.set_horizontal_velocity(self.paddle, 0)
@@ -135,7 +131,7 @@ class Level(arcade.View):
     def on_draw(self):
         self.clear()
         self.scene.draw()
-        self.scene.draw_hit_boxes()
+        self.scene.get_sprite_list("tiles").draw_hit_boxes()
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:
@@ -188,5 +184,7 @@ class Level(arcade.View):
         return shield
     
     def ball_tile_collision(self, ball_sprite, tile_sprite, arbiter, space, data):
+        arcade.play_sound(self.brick_hit)
         tile_sprite.remove_from_sprite_lists()
         self.score += 10
+        return False
