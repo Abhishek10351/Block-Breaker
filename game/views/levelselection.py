@@ -12,14 +12,17 @@ class LevelSelection(arcade.View):
             for i in range(self.window.total_levels)
         ]
         self.grid_layout = arcade.gui.UIGridLayout(
-            x=10,
-            y=500,
-            horizontal_spacing=20,
             padding=10,
+            horizontal_spacing=10,
+            vertical_spacing=10,
             column_count=5,
             row_count=2,
-            children=self.buttons,
         )
+        for i in self.buttons:
+            level = int(i.text)
+            column = level % 5
+            row = level // 5
+            self.grid_layout.add(i, column, row)
 
         for i in self.buttons:
             i.on_click = self.on_click
