@@ -1,5 +1,7 @@
 import arcade
 import pyglet.media
+from pathlib import Path
+from constants import MAP_PATH
 
 
 class Window(arcade.Window):
@@ -11,11 +13,14 @@ class Window(arcade.Window):
         self.total_time = 0.0
         self.sound = True
         self.music = True
-        self.total_levels = 1
         self.levels_completed = 0  # the last level completed
         self.current_level = 1  # the level currently played
         self.bg_music = pyglet.media.Player()
         self.completed = False
+
+    @property
+    def total_levels(self):
+        return len(list(MAP_PATH.glob("level_*.tmx")))
 
     def on_update(self, delta_time):
         self.total_time += delta_time

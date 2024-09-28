@@ -17,6 +17,8 @@ if __name__ == "__main__":
         "GameOver": views.GameOverView(),
         "HowToPlay": views.HowToPlay(),
         "Level": views.Level(),
+        "LevelSelection": views.LevelSelection(),
+        "Settings": views.SettingsView(),
     }
     window.views["Level"].setup()
 
