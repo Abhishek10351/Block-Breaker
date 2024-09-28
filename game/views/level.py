@@ -3,6 +3,7 @@ import arcade.gui
 from constants import *
 import pymunk
 from pathlib import Path
+import math
 
 
 class Level(arcade.View):
@@ -26,38 +27,44 @@ class Level(arcade.View):
         arcade.set_background_color(arcade.color.BALL_BLUE)
 
     def setup(self):
+        # ! TODO :  ADD A MAXIMUM VELOCITY TO THE BALL
+        # ! (WHEN IT BECOMES TOO FAST)
         self.score = 0
         self.launched = False
 
-        map_name = "map.tmj"
+        map_name = f"level_{self.window.current_level}.tmx"
         map_name = ASSETS_PATH / "levels" / map_name
         layer_options = {
             "tiles": {"use_spatial_hash": True},
         }
 
+        self.map_offset = (100, 300)
+
         self.tile_map = arcade.load_tilemap(
-            map_file=map_name, scaling=1, layer_options=layer_options
+            map_file=map_name,
+            scaling=TILE_SCALING,
+            layer_options=layer_options,
+            offset=self.map_offset,
+            hit_box_algorithm=arcade.hitbox.PymunkHitBoxAlgorithm(detail=10),
         )
         self.scene = arcade.Scene.from_tilemap(tilemap=self.tile_map)
+        # self.end_of_map = self.tile_map.width * GRID_PIXEL_SIZE
 
-        self.end_of_map = self.tile_map.width * 4 * 16
-
-        self.scene.add_sprite_list("Player")
+        self.scene.add_sprite_list("Paddle")
         self.paddle_path = f"assets/puzzlepack/paddle.png"
         self.paddle = arcade.Sprite(self.paddle_path, scale=0.20)
-        self.paddle.center_x = self.window.width / 2 - 100  # left to right
+        self.paddle.center_x = self.window.width / 2
+        # self.paddle.center_x += self.paddle.width / 2
         self.paddle.center_y = 50
-        self.scene.add_sprite("Player", self.paddle)
+        self.scene.add_sprite("Paddle", self.paddle)
 
         # add a ball to hit
         self.scene.add_sprite_list("Ball")
         self.ball_path = f"assets/puzzlepack/ballBlue.png"
-        self.ball_sprite = arcade.Sprite(self.ball_path, scale=0.75)
-        self.ball_sprite.center_x = self.paddle.center_x  # left to right
-        self.ball_sprite.center_y = (
-            self.paddle.top + self.ball_sprite.height / 2
-        )  # up and down
-        self.scene.add_sprite("Ball", self.ball_sprite)
+        self.ball = arcade.Sprite(self.ball_path, scale=0.75)
+        self.ball.center_x = self.paddle.center_x
+        self.ball.center_y = self.paddle.top + self.ball.height / 2
+        self.scene.add_sprite("Ball", self.ball)
 
         if self.tile_map.background_color:
             arcade.set_background_color(self.tile_map.background_color)
@@ -68,7 +75,7 @@ class Level(arcade.View):
 
         self.physics_engine = arcade.PymunkPhysicsEngine()
         self.physics_engine.add_sprite_list(
-            self.scene.get_sprite_list("Player"),
+            self.scene.get_sprite_list("Paddle"),
             body_type=arcade.PymunkPhysicsEngine.KINEMATIC,
             elasticity=1.0,
             friction=1.0,
@@ -116,63 +123,75 @@ class Level(arcade.View):
             mass=10,
             friction=1.0,
             elasticity=1.0,
+            collision_type="walls",
         )
 
         self.physics_engine.add_collision_handler(
             "ball", "tile", begin_handler=self.ball_tile_collision
         )
 
-        self.physics_engine.set_horizontal_velocity(self.ball_sprite, 100)
+        self.physics_engine.add_collision_handler(
+            "walls", "paddle", pre_handler=self.test
+        )
+        self.physics_engine.set_horizontal_velocity(self.ball, 100)
+
+    def test(self, wall, paddle, arbiter, space, data):
+        self.physics_engine.set_horizontal_velocity(self.paddle, 0)
+        return False
+        return True
 
     def on_update(self, delta_time):
 
-        max_velocity = 300
+        max_velocity = 500
         # if velocity of ball becomes large, reduce it to a constant value
-        if self.ball_sprite.velocity[0] > max_velocity:
-            self.physics_engine.set_horizontal_velocity(self.ball_sprite, max_velocity)
-        if self.ball_sprite.velocity[1] > max_velocity:
-            self.physics_engine.set_vertical_velocity(self.ball_sprite, max_velocity)
+        ball_phys = self.physics_engine.get_physics_object(self.ball).body
+        if abs(ball_phys.velocity.x) > max_velocity:
+            self.physics_engine.set_horizontal_velocity(self.ball, max_velocity)    
+        if abs(ball_phys.velocity.y) > max_velocity:
+            self.physics_engine.set_velocity(self.ball, (ball_phys.velocity.x, max_velocity))
         if self.scene.get_sprite_list("tiles").__len__() == 0:
             arcade.play_sound(self.game_complete)
             self.setup()
             # show game complete screen
             self.window.show_view(self.window.views["LevelUp"])
-        if self.ball_sprite.bottom <= 0:
+        if self.ball.bottom <= 0:
             self.launched = False
             arcade.play_sound(self.game_over)
             self.setup()
         if not self.launched:
             # change the direction of the ball if it goes left or right of paddle
-            if self.ball_sprite.right >= self.paddle.right:
-                self.physics_engine.set_horizontal_velocity(self.ball_sprite, -100)
-            elif self.ball_sprite.left <= self.paddle.left:
-                self.physics_engine.set_horizontal_velocity(self.ball_sprite, 100)
-        brick_hit_list = arcade.check_for_collision_with_list(
-            self.ball_sprite, self.scene.get_sprite_list("tiles")
-        )
-        if self.paddle.left <= 0:
-            self.paddle.left = 0
-            self.physics_engine.set_horizontal_velocity(self.paddle, 0)
-        self.physics_engine.step(1.5 / 60)
-        self.physics_engine.resync_sprites()
+            if self.ball.right >= self.paddle.right:
+                self.physics_engine.set_horizontal_velocity(self.ball, -100)
+            elif self.ball.left <= self.paddle.left:
+                self.physics_engine.set_horizontal_velocity(self.ball, 100)
+        self.physics_engine.step(1 / 60)
 
     def on_draw(self):
         self.clear()
         self.scene.draw()
-        self.scene.get_sprite_list("tiles").draw_hit_boxes()
+        self.scene.draw_hit_boxes(names=["tiles", "Ball"], line_thickness=1.2)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:
             self.setup()
         if key == arcade.key.SPACE:
             if not self.launched:
-                self.physics_engine.apply_force(self.ball_sprite, (0, 20000))
+                self.physics_engine.apply_force(self.ball, (0, 80000))
                 arcade.play_sound(self.jump_sound)
             self.launched = True
-        if key == arcade.key.LEFT:
-            self.physics_engine.set_horizontal_velocity(self.paddle, -400)
-        if key == arcade.key.RIGHT:
-            self.physics_engine.set_horizontal_velocity(self.paddle, 400)
+        if self.launched:
+            if key == arcade.key.LEFT:
+                (
+                    self.physics_engine.set_horizontal_velocity(self.paddle, -800)
+                    if self.paddle.left > 0
+                    else None
+                )
+            if key == arcade.key.RIGHT:
+                (
+                    self.physics_engine.set_horizontal_velocity(self.paddle, 800)
+                    if self.paddle.right < self.window.width
+                    else None
+                )
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.RIGHT:
@@ -202,18 +221,17 @@ class Level(arcade.View):
         walls.append(top_wall)
         return walls
 
-    def create_shield(self):
+    def create_shield(self, color: arcade.color = arcade.csscolor.WHITE):
         shield = arcade.SpriteList()
-        shield_sprite = arcade.SpriteSolidColor(
-            self.window.width, 10, arcade.csscolor.WHITE
-        )
+        shield_sprite = arcade.SpriteSolidColor(self.window.width, 10, color)
         shield_sprite.center_x = self.window.width / 2
-        shield_sprite.center_y = self.paddle.bottom - 10
+        shield_sprite.center_y = self.paddle.bottom - shield_sprite.height / 2
         shield.append(shield_sprite)
         return shield
 
-    def ball_tile_collision(self, ball_sprite, tile_sprite, arbiter, space, data):
+    def ball_tile_collision(self, ball, tile_sprite, arbiter, space, data):
         arcade.play_sound(self.brick_hit)
         tile_sprite.remove_from_sprite_lists()
         self.score += 10
-        return False
+        return True
+        # return False if we want to move through the tiles (as in a powerup)
