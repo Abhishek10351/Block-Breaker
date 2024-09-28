@@ -9,16 +9,16 @@ class Menu(arcade.View):
     def __init__(self):
         super().__init__()
         self.start_screen = arcade.gui.UIBoxLayout(space_between=20)
-        start_button = arcade.gui.UIFlatButton(text="Start Game", width=200)
+        start_button = arcade.gui.UIFlatButton(text="Start Game", width=200, style=arcade.gui.UIFlatButton.STYLE_BLUE)
         start_button.on_click = self.on_start_button_click
         self.start_screen.add(start_button)
-        how_to_play = arcade.gui.UIFlatButton(text="How to Play", width=200)
+        how_to_play = arcade.gui.UIFlatButton(text="How to Play", width=200,height=60, style=arcade.gui.UIFlatButton.STYLE_BLUE)
         how_to_play.on_click = self.on_how_to_play_click
         self.start_screen.add(how_to_play)
-        settings_button = arcade.gui.UIFlatButton(text="Settings", width=200)
+        settings_button = arcade.gui.UIFlatButton(text="Settings", width=200, style=arcade.gui.UIFlatButton.STYLE_BLUE)
         settings_button.on_click = self.on_settings_button_click
         self.start_screen.add(settings_button)
-        quit_button = arcade.gui.UIFlatButton(text="Exit", width=200)
+        quit_button = arcade.gui.UIFlatButton(text="Exit", width=200, style=arcade.gui.UIFlatButton.STYLE_RED)
         self.start_screen.add(quit_button)
 
         self.manager = arcade.gui.UIManager()
@@ -29,7 +29,7 @@ class Menu(arcade.View):
         self.manager.enable()
 
         @quit_button.event
-        def on_click(self, event):
+        def on_click(event):
             arcade.exit()
 
     def on_settings_button_click(self, event):
