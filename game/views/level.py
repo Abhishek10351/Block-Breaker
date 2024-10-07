@@ -146,9 +146,11 @@ class Level(arcade.View):
         # if velocity of ball becomes large, reduce it to a constant value
         ball_phys = self.physics_engine.get_physics_object(self.ball).body
         if abs(ball_phys.velocity.x) > max_velocity:
-            self.physics_engine.set_horizontal_velocity(self.ball, max_velocity)    
+            self.physics_engine.set_horizontal_velocity(self.ball, max_velocity)
         if abs(ball_phys.velocity.y) > max_velocity:
-            self.physics_engine.set_velocity(self.ball, (ball_phys.velocity.x, max_velocity))
+            self.physics_engine.set_velocity(
+                self.ball, (ball_phys.velocity.x, max_velocity)
+            )
         if self.scene.get_sprite_list("tiles").__len__() == 0:
             arcade.play_sound(self.game_complete)
             self.setup()
@@ -233,5 +235,6 @@ class Level(arcade.View):
         arcade.play_sound(self.brick_hit)
         tile_sprite.remove_from_sprite_lists()
         self.score += 10
+        return False
         return True
         # return False if we want to move through the tiles (as in a powerup)

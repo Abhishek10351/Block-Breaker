@@ -22,6 +22,6 @@ if __name__ == "__main__":
     }
     window.views["Level"].setup()
 
-    window.show_view(window.views["Level"])
+    window.show_view(window.views["Menu"])
     arcade.set_background_color(arcade.color.SKY_BLUE)
     arcade.run()

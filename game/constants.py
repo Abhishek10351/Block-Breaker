@@ -10,6 +10,8 @@ SCREEN_HEIGHT = 800
 
 ASSETS_PATH = Path(".").parent / "assets"
 MAP_PATH = ASSETS_PATH / "levels"
+UI_PATH = ASSETS_PATH / "UI"
+STARS_PATH = UI_PATH / "stars"
 
 
 TILE_SCALING = 1.2
