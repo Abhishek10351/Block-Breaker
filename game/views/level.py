@@ -10,6 +10,8 @@ class Level(arcade.View):
     def __init__(self):
         super().__init__()
 
+        self.clock = arcade.clock.Clock()
+
         self.scene = arcade.Scene()
         self.score: int = 0
         self.reset_score = True
@@ -29,6 +31,7 @@ class Level(arcade.View):
     def setup(self):
         # ! TODO :  ADD A MAXIMUM VELOCITY TO THE BALL
         # ! (WHEN IT BECOMES TOO FAST)
+        self.clock = arcade.clock.Clock()
         self.score = 0
         self.launched = False
 
@@ -94,15 +97,15 @@ class Level(arcade.View):
         )
 
         self.shield = self.create_shield()
-        self.scene.add_sprite_list("shield", sprite_list=self.shield)
-        self.physics_engine.add_sprite_list(
-            self.scene.get_sprite_list("shield"),
-            body_type=arcade.PymunkPhysicsEngine.STATIC,
-            damping=0.0,
-            mass=10,
-            friction=1.0,
-            elasticity=1.0,
-        )
+        # self.scene.add_sprite_list("shield", sprite_list=self.shield)
+        # self.physics_engine.add_sprite_list(
+        #     self.scene.get_sprite_list("shield"),
+        #     body_type=arcade.PymunkPhysicsEngine.STATIC,
+        #     damping=0.0,
+        #     mass=10,
+        #     friction=1.0,
+        #     elasticity=1.0,
+        # )
 
         # make tiles static
         self.physics_engine.add_sprite_list(
@@ -141,6 +144,7 @@ class Level(arcade.View):
         return True
 
     def on_update(self, delta_time):
+        self.clock.tick(delta_time)
 
         max_velocity = 500
         # if velocity of ball becomes large, reduce it to a constant value
@@ -151,7 +155,7 @@ class Level(arcade.View):
             self.physics_engine.set_velocity(
                 self.ball, (ball_phys.velocity.x, max_velocity)
             )
-        if self.scene.get_sprite_list("tiles").__len__() == 0:
+        if len(self.scene.get_sprite_list("tiles")) == 0:
             arcade.play_sound(self.game_complete)
             self.setup()
             # show game complete screen
@@ -160,6 +164,7 @@ class Level(arcade.View):
             self.launched = False
             arcade.play_sound(self.game_over)
             self.setup()
+            self.window.show_view(self.window.views["GameOver"])
         if not self.launched:
             # change the direction of the ball if it goes left or right of paddle
             if self.ball.right >= self.paddle.right:
@@ -235,6 +240,6 @@ class Level(arcade.View):
         arcade.play_sound(self.brick_hit)
         tile_sprite.remove_from_sprite_lists()
         self.score += 10
-        return False
+        # return False
         return True
         # return False if we want to move through the tiles (as in a powerup)

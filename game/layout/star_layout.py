@@ -18,10 +18,10 @@ class StarLayout(UILayout):
     def __init__(self, stars: int = 3):
         super().__init__(padding=10, align="center", direction="row")
         self.stars = stars
+
         self.outline_path = STARS_PATH / "star_outline.png"
         self.outline_depth_path = STARS_PATH / "star_outline_depth.png"
         self.filled_path = STARS_PATH / "star.png"
-        # self.outline_texture = arcade.Texture(self.outline_path)
         self.star_paths = [
             self.outline_path,
             self.outline_depth_path,
@@ -29,17 +29,18 @@ class StarLayout(UILayout):
         ]
         rotate_angle = 20
         angles = [-rotate_angle, 0, rotate_angle]
-        scales = [0.60, 0.60, 0.60]
+        scale = 0.60
         for i in range(3):
             img_no = 2 if i < self.stars else 0
             texture = arcade.load_texture(self.star_paths[img_no])
-            texture.size = (texture.width * scales[i], texture.height * scales[i])
-            star = StarImage(
+            texture.size = (texture.width * scale, texture.height * scale)
+            star = UIImage(
                 texture=texture,
                 center_x=100,
                 center_y=100,
                 angle=angles[i],
             )
+            star.angle = angles[i]
 
             self.add(star)
 

@@ -12,7 +12,9 @@ class GameOverView(arcade.View):
 
     @property
     def message(self):
-        return f"You have lost level {self.window.current_level}.\nClick to continue."
+        return (
+            f"""You have lost level {self.window.current_level}.\nClick to continue."""
+        )
 
     @property
     def text(self):
@@ -21,7 +23,7 @@ class GameOverView(arcade.View):
             100,
             400,
             bold=True,
-            width=300,
+            width=600,
             font_name="Kenney Future",
             font_size=40,
             multiline=True,
@@ -34,5 +36,4 @@ class GameOverView(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         """If the user presses the mouse button, re-start the game."""
 
-        game_view = self.window.views["StartScreen"]
-        self.window.show_view(game_view)
+        self.window.show_view(self.window.views["Menu"])
