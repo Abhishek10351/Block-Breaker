@@ -34,6 +34,7 @@ class Level(arcade.View):
         self.clock = arcade.clock.Clock()
         self.score = 0
         self.launched = False
+        self.manager = arcade.gui.UIManager()
 
         map_name = f"level_{self.window.current_level}.tmx"
         map_name = ASSETS_PATH / "levels" / map_name
@@ -137,6 +138,23 @@ class Level(arcade.View):
             "walls", "paddle", pre_handler=self.test
         )
         self.physics_engine.set_horizontal_velocity(self.ball, 100)
+        self.time_label = arcade.gui.UILabel(
+            text=self.time_str,
+            x=self.window.width - 120,
+            y=self.window.height - 120,
+            font_name="Kenney Future",
+            font_size=20,
+            text_color=arcade.color.BRICK_RED,
+        )
+        self.manager.add(self.time_label)
+
+    @property
+    def time(self):
+        return self.clock.time
+
+    @property
+    def time_str(self):
+        return f"{int(self.time//60):0>2}:{math.ceil(self.time)%60:0>2}"
 
     def test(self, wall, paddle, arbiter, space, data):
         self.physics_engine.set_horizontal_velocity(self.paddle, 0)
@@ -148,6 +166,7 @@ class Level(arcade.View):
 
         max_velocity = 500
         # if velocity of ball becomes large, reduce it to a constant value
+        self.time_label.text = self.time_str
         ball_phys = self.physics_engine.get_physics_object(self.ball).body
         if abs(ball_phys.velocity.x) > max_velocity:
             self.physics_engine.set_horizontal_velocity(self.ball, max_velocity)
@@ -177,6 +196,7 @@ class Level(arcade.View):
         self.clear()
         self.scene.draw()
         self.scene.draw_hit_boxes(names=["tiles", "Ball"], line_thickness=1.2)
+        self.manager.draw()
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:
